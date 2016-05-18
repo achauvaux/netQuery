@@ -16,8 +16,8 @@ namespace test_netQuery
 {
     public partial class Form1 : Form
     {
-
         netQuery.netQuery nq;
+        ArrayList elements;
 
         public Form1()
         {
@@ -48,11 +48,18 @@ namespace test_netQuery
 
                 richTextBox2.Text = w.DocumentText;
 
-                ArrayList elements = nq.getElements(textBox2.Text);
+                if(elements!=null)
+                    foreach (HtmlElement element in elements)
+                    {
+                        element.Style = "";
+                    }
+
+                elements = nq.getElements(textBox2.Text);
 
                 richTextBox1.Clear();
                 foreach (HtmlElement element in elements)
                 {
+                    element.Style = "border : 1px solid red";
                     richTextBox1.AppendText(element.TagName + " #" + element.Id + "\n");
                     if (element.OuterHtml != null)
                         richTextBox1.AppendText(element.OuterHtml + "\n");

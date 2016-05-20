@@ -110,6 +110,8 @@ namespace netQuery
                                             elements.Remove(element);
                                         }
                                         break;
+                                    default:
+                                        return new ArrayList();
                                 }
                                 break;
                             case ("["):

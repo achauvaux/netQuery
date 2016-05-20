@@ -22,8 +22,8 @@ namespace test_netQuery
         public Form1()
         {
             InitializeComponent();
-            // textBox1.Text = "http://www.google.fr";
-            textBox1.Text = @"C:\Users\achau\OneDrive\Documents\test_netQuery.html";
+            textBox1.Text = "http://www.google.fr";
+            // textBox1.Text = @"C:\Users\achau\OneDrive\Documents\test_netQuery.html";
             textBox2.Text = "div div";
         }
 
@@ -59,7 +59,7 @@ namespace test_netQuery
                 richTextBox1.Clear();
                 foreach (HtmlElement element in elements)
                 {
-                    element.Style = "border : 1px solid red";
+                    element.Style = "border : 2px dotted red";
                     richTextBox1.AppendText(element.TagName + " #" + element.Id + "\n");
                     if (element.OuterHtml != null)
                         richTextBox1.AppendText(element.OuterHtml + "\n");

@@ -93,13 +93,13 @@ namespace netQuery
                                         nth = Convert.ToInt32(getArgumentValue(token));
                                         elements = getNthChildElements(elements, nth);
                                         break;
-                                    /*
-                                    case ("lt"):
-                                        break;
-									*/
                                     case ("eq"):
                                         nth = Convert.ToInt32(getArgumentValue(token));
-                                        elements = getNthElement(elements, nth + 1);
+                                        elements = getNthElement(elements, nth);
+                                        break;
+                                    case ("lt"):
+                                        nth = Convert.ToInt32(getArgumentValue(token));
+                                        elements = getInfNthElements(elements, nth);
                                         break;
                                     case "not":
                                         string cssExp = getArgumentValue(token);
@@ -115,7 +115,7 @@ namespace netQuery
                                 }
                                 break;
                             case ("["):
-                            string value = null;
+                                string value = null;
                                 string[] attVal = token.Split(new Char[] { '=' });
                                 string attributeName = attVal[0];
                                 if (attVal.Count() > 1)
@@ -128,6 +128,8 @@ namespace netQuery
                     {
                         switch (token)
                         {
+                            case ("*"):
+                                break;
                             case (" "):
                                 elements = getAllDescensdantsElements(elements);
                                 break;
@@ -181,7 +183,7 @@ namespace netQuery
                 c = pcssExp.Substring(i, 1);
                 if (escapeSequence == "")
                 {
-                    if (" #.>+~[]():\"'".IndexOf(c) == -1)
+                    if ("* #.>+~[]():\"'".IndexOf(c) == -1)
                     {
                         token += c;
                     }
@@ -205,6 +207,7 @@ namespace netQuery
                                 escapeSequence = ")";
                                 token += c;
                                 break;
+                            case "*":
                             case " ":
                             case "#":
                             case ".":
@@ -251,7 +254,7 @@ namespace netQuery
 
         private bool isWord(string ptoken)
         {
-            if (" #.>+~[]:".IndexOf(ptoken) == -1)
+            if ("* #.>+~[]:".IndexOf(ptoken) == -1)
             {
                 return true;
             }
@@ -320,9 +323,9 @@ namespace netQuery
                     }
                     else
                     {
-                        if(element.GetAttribute(pattributeName)!="")
+                        if (element.GetAttribute(pattributeName) != "")
                         {
-                            if(pvalue==null || element.GetAttribute(pattributeName).Replace("[]", "") == pvalue)
+                            if (pvalue == null || element.GetAttribute(pattributeName).Replace("[]", "") == pvalue)
                                 addOnce(elementsByAttribute, element);
                         }
                     }
@@ -356,7 +359,7 @@ namespace netQuery
 
             return listChildrenElements;
         }
-        
+
         private ArrayList getAllDescensdantsElements(HtmlElement pelement)
         {
             ArrayList listDescensdantElements = new ArrayList();
@@ -369,7 +372,7 @@ namespace netQuery
 
             return listDescensdantElements;
         }
-        
+
         private ArrayList getAllDescensdantsElements(ArrayList pelements)
         {
             ArrayList listDescensdantElements = new ArrayList();
@@ -386,7 +389,8 @@ namespace netQuery
         {
             ArrayList listBrotherElements = new ArrayList();
 
-            addElements(listBrotherElements, getChildrenElements(pelement.Parent));
+            if (pelement.Parent != null)
+                addElements(listBrotherElements, getChildrenElements(pelement.Parent));
 
             return listBrotherElements;
         }
@@ -407,7 +411,7 @@ namespace netQuery
         {
             ArrayList listBrotherElements = new ArrayList();
             bool isYounger = false;
-                 
+
             foreach (HtmlElement brotherElement in pelement.Parent.Children)
             {
                 if (isYounger)
@@ -436,20 +440,23 @@ namespace netQuery
             return listYoungerBrotherElements;
         }
 
-        /*
-        private HtmlElement getNthElement(ArrayList pelements, int pnth)
-        {
-            return (HtmlElement)pelements[pnth - 1];
-        }
-        */
-        
         private ArrayList getNthElement(ArrayList pelements, int pnth)
         {
             ArrayList nthElement = new ArrayList();
 
-            nthElement.Add(pelements[pnth - 1]);
+            nthElement.Add(pelements[pnth]);
 
             return nthElement;
+        }
+
+        private ArrayList getInfNthElements(ArrayList pelements, int pnth)
+        {
+            ArrayList nthInfElements = new ArrayList();
+
+            for (int i = 0; i < pnth; i++)
+                nthInfElements.Add(pelements[i]);
+
+            return nthInfElements;
         }
 
         private ArrayList getNthChildElements(ArrayList pelements, int pnth)
@@ -471,7 +478,7 @@ namespace netQuery
 
             foreach (HtmlElement element in pelements)
             {
-                if (getPositionInSiblings(element) == getBrotherElements(element).Count) // TODO optimiser
+                if (getPositionInSiblings(element) == getBrotherElements(element).Count) // TODO optimisation
                     nthChildElement.Add(element);
             }
 
@@ -483,7 +490,7 @@ namespace netQuery
             return getBrotherElements(pelement).IndexOf(pelement) + 1;
         }
 
-        private ArrayList deduplicate(ArrayList pelements)
+        private ArrayList deduplicate(ArrayList pelements) // useless
         {
             ArrayList deduplicatedElements = new ArrayList();
 
@@ -508,9 +515,10 @@ namespace netQuery
 
         private void addElements(ArrayList pal1, ArrayList pal2)
         {
-            foreach(HtmlElement element in pal2)
+            foreach (HtmlElement element in pal2)
             {
-                pal1.Add(element);
+                // pal1.Add(element);
+                addOnce(pal1, element);
             }
         }
 

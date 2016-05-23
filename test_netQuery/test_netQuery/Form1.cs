@@ -57,6 +57,9 @@ namespace test_netQuery
                 elements = nq.getElements(textBox2.Text);
 
                 richTextBox1.Clear();
+
+                richTextBox1.AppendText(elements.Count + " element(s) retrieved." + "\n\n");
+
                 foreach (HtmlElement element in elements)
                 {
                     element.Style = "border : 2px dotted red";
